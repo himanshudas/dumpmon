@@ -1,19 +1,48 @@
 import re
 
 regexes = {
-    'email': re.compile(r'[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}', re.I),
+    #'shadow' : re.compile('.*?(:(.)*?){8}'),
     #'ssn' : re.compile(r'\d{3}-?\d{2}-?\d{4}'),
-    'hash32': re.compile(r'[^<A-F\d/]([A-F\d]{32})[^A-F\d]', re.I),
-    'FFF': re.compile(r'FBI\s*Friday', re.I),  # will need to work on this to not match CSS
-    'lulz': re.compile(r'(lulzsec|antisec)', re.I),
+    #'userpass' : re.compile('[A-Z0-9._%+-]+@[A-Z0-9.-]*?\.?[A-Z]{2,4}\s*?[;|:|\||\s|,]+?\s*?\w{5,}', re.I),
+    #'userpass' : re.compile('\w*?\s*?[;|:|\||/|\s]*?\s*?\w*?@\w*?[:|\||/|\s]?'),
+    'aws_access_key': re.compile(r'(?<![A-Z0-9])[A-Z0-9]{20}(?![A-Z0-9])', re.I),
+    'bitcoin':  re.compile(r'bitcoin', re.I),
+    'cc_dump' : re.compile('[%|;]?[a-zA-Z]?[0-9]{16,19}[\^|=](.+?[\^|=])?[0-9]{4}.+?\?'),
     'cisco_hash': re.compile(r'enable\s+secret', re.I),
     'cisco_pass': re.compile(r'enable\s+password', re.I),
+    'credit_card': re.compile('[\||:|;|\s]+?(?:4[0-9]{12}(?:[0-9]{3})?|5[1-5][0-9]{14}|6(?:011|5[0-9][0-9])[0-9]{12}|3[47][0-9]{13}|3(?:0[0-5]|[68][0-9])[0-9]{11}|(?:2131|1800|35\d{3})\d{11})[\s|\||:|;]+?'),
+    'email': re.compile(r'[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}', re.I),
+    'email2':re.compile(r'[\w\.-]+@[\w\.-]+'),
+    'FFF': re.compile(r'FBI\s*Friday', re.I),
     'google_api': re.compile(r'\W(AIza.{35})'),
+    'hash16': re.compile(r'[^<0-9a-zA-Z/]([0-9a-zA-Z]{16})[^0-9a-zA-Z]', re.I),
+    'hash32': re.compile(r'[^<0-9a-zA-Z/]([0-9a-zA-Z]{32})[^0-9a-zA-Z]', re.I),
+    'hash40': re.compile(r'[^<0-9a-zA-Z/]([0-9a-zA-Z]{40})[^0-9a-zA-Z]', re.I),
     'honeypot': re.compile(r'<dionaea\.capture>', re.I),
+    'imei' : re.compile('[0-9]{2}-[0-9]{6}-[0-9]{6}-([0-9]?|[0-9]{2})'),
+    'ip' : re.compile('[0-2]?[0-9]?[0-9]+?(\.[0-2]?[0-9]?[0-9]+?){3}'),
+    'lulz': re.compile(r'(lulzsec|antisec)', re.I),
+    'mail-pass' : re.compile('^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}\s*?[:|\||/]\s*?\w[4-50]\n'),
+    'md5_wp' : re.compile('\$.\$.{31}'),
+    'md5crypt' : re.compile('\$1\$[\./0-9A-Za-z]*?\$[\./0-9A-Za-z]{22}'),
+    'mysql_new': re.compile(r'[\*^<A-F\d/]([A-F\d]{40})[^A-F\d]', re.I),
+    'ntds_dit': re.compile(r'krbtgt', re.I),
+    'passwd': re.compile(r'^root\:x\:0\:0', re.I),
     'pgp_private': re.compile(r'BEGIN PGP PRIVATE', re.I),
-    'ssh_private': re.compile(r'BEGIN RSA PRIVATE', re.I),
+    'phonenum' : re.compile('(\d{1,4}[\s|-|/]?\d{1,4})+?'),
+    'sha1' : re.compile('[0-9a-fA-F]{40}'),
+    'sha1crypt' : re.compile('\$sha1\$\d+?\$[\./0-9A-Za-z]*?\$[\./0-9A-Za-z]{28}'),
+    'shadow' : re.compile('(\$5(\$rounds=\d+)?\$[/\.\w]*?\$[/\.\w]{43})|(\$2[a|y|x]?\$\d{2}\$[\./\w]{53})'),
+    'shadow_root': re.compile(r'^root\:\$[0-9]\$', re.I),
+    'ssh_private': re.compile(r'BEGIN RSA PRIVATE', re.I), 
+    'ssn' : re.compile('([a-zA-Z]{6}[0-9]{2}[a-zA-Z][0-9]{2}[a-zA-Z][0-9]{3}[a-zA-Z])|(\d{3}-\d{2}-\d{4})'),
+    'steam':  re.compile(r'steam accounts', re.I),
+    'sun_md5' : re.compile('\$md5(,rounds=\d+?)?\$[\./0-9A-Za-z]+?\$\$[\./0-9A-Za-z]{22}'),
+    'telegram_bot': re.compile(r'\d{9}:[0-9A-Za-z_-]{35}'),
+    'twitter' : re.compile('(^@([A-Za-z0-9_]+))|(twitter.com/\w+)'),
+    'userpass' : re.compile('^\w{4-50}\s*?[;|:|\||/|\t]+?\s*?\w{4-50}[:|\||/\n|\s]?'),  
     'db_keywords': [
-		re.compile(r'((customers?|email|users?|members?|acc(?:oun)?ts?)([-_|/\s]?(address|name|id[^")a-zA-Z0-9_]|[-_:|/\\])))', re.I),
+        re.compile(r'((customers?|email|users?|members?|acc(?:oun)?ts?)([-_|/\s]?(address|name|id[^")a-zA-Z0-9_]|[-_:|/\\])))', re.I),
         re.compile(r'((\W?pass(wor)?d|hash)[\s|:])', re.I),
         re.compile(r'((\btarget|\bsite)\s*?:?\s*?(([a-z][\w-]+:/{1,3})?([-\w\s_/]+\.)*[\w=/?%]+))', re.I),  # very basic URL check - may be improved later
         re.compile(r'(my\s?sql[^i_\.]|sql\s*server)', re.I),
@@ -23,9 +52,9 @@ regexes = {
         re.compile(r'((available|current)\s*(databases?|dbs?)\W)', re.I),
         re.compile(r'(hacked\s*by)', re.I)
     ],
-	# I was hoping to not have to make a blacklist, but it looks like I don't really have a choice
+    # I was hoping to not have to make a blacklist, but it looks like I don't really have a choice
     'blacklist': [ 
-		re.compile(r'(select\s+.*?from|join|declare\s+.*?\s+as\s+|update.*?set|insert.*?into)', re.I),  # SQL
+        re.compile(r'(select\s+.*?from|join|declare\s+.*?\s+as\s+|update.*?set|insert.*?into)', re.I),  # SQL
         re.compile(r'(define\(.*?\)|require_once\(.*?\))', re.I),  # PHP
         re.compile(r'(function.*?\(.*?\))', re.I),
         re.compile(r'(Configuration(\.Factory|\s*file))', re.I),
@@ -38,6 +67,10 @@ regexes = {
     'banlist': [
         re.compile(r'faf\.fa\.proxies', re.I),
         re.compile(r'Technic Launcher is starting', re.I),
+        re.compile(r'TDSS rootkit removing tool', re.I),
+        re.compile(r'INFO: Processing cookbook_file', re.I),
+        re.compile(r'loading\.target\.rdio', re.I),
+        re.compile(r'<key>SysInfoCrashReporterKey</key>', re.I),
         re.compile(r'OTL logfile created on', re.I),
         re.compile(r'RO Game Client crashed!', re.I),
         re.compile(r'Selecting PSO2 Directory', re.I),
@@ -48,6 +81,21 @@ regexes = {
         re.compile(r'Initializing cgroup subsys cpuset', re.I),
         re.compile(r'Init vk network', re.I),
         re.compile(r'MediaTomb UPnP Server', re.I),
+        re.compile(r'BattlEye Server', re.I),
+        re.compile(r'Farbar Recovery Scan Tool', re.I),
+        re.compile(r'DVD|BRrip', re.I),
+        re.compile(r'Starting TWRP', re.I),
+        re.compile(r'Burn v(\d+\.)+\d+, ', re.I),
+        re.compile(r'Notice\: Starting Kodi \(.*?\)\. Platform\:', re.I),
+        re.compile(r'Starting TWRP (\d+\.)+', re.I),
+        re.compile(r'\[C\] Console v\d+\.\d', re.I),
+        re.compile(r'EXTINF\:', re.I),
+        re.compile(r'\@openssh\.com', re.I),
+        re.compile(r'.NET exception information', re.I),
+        re.compile(r'\[C\] Console v.*?build.*?PlugIn', re.I),
+        re.compile(r'\[VoiceVolumes\]', re.I),
+        re.compile(r'Grand Theft Auto', re.I),
+        re.compile(r'(minecraft|feed the beast|technicpack|mcpatcher)', re.I),
         re.compile(r'#EXTM3U\n#EXTINF:', re.I)
     ]
 }
